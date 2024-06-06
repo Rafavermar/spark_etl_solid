@@ -1,0 +1,10 @@
+SPARK_APP_NAME=FirstApproachSpark
+SPARK_URL=local[3]
+SPARK_EXECUTOR_MEMORY=1g
+SPARK_EXECUTOR_CORES=3
+SPARK_CORES_MAX=3
+DATA_DIR=./data
+REMOTE_DATA_URL=https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.csv?accessType=DOWNLOAD
+LOCAL_FILENAME=Chicago_crime_data.csv
+AWS_ACCESS_KEY=
+AWS_SECRET_KEY=
