@@ -4,7 +4,7 @@ This project implements an Extract, Transform, and Load (ETL) process for crime 
 
 ## Description
 
-`solid_etl_spark` uses PySpark to process crime data provided by the City of Chicago's open data portal. The project includes automatic data downloading, processing to add timestamps, grouping information by day of the week, and saving the processed data to AWS S3 in Parquet format.
+`solid_etl_spark` uses PySpark to process crime data provided by the [City of Chicago's open data portal](https://data.cityofchicago.org/Public-Safety/Crimes-2001-to-Present/ijzp-q8t2/about_data). The project includes automatic data downloading, processing to add timestamps, grouping information by day of the week, and saving the processed data to AWS S3 in Parquet format.
 
 ## Features
 
