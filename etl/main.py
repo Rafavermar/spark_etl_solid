@@ -1,39 +1,34 @@
 import in_n_out as ino
+import containers
 from extractors.data_loader import DataLoader
-from transformers.spark_manager import SparkManager
+from managers.s3_storage_manager import S3StorageManager
+from managers.spark_session_manager import SparkSessionManager
+from managers.data_transformer import DataTransformer
 from pyspark.sql.functions import col
 from decorators.decorators import log_decorator, timing_decorator
-from pyspark.sql import SparkSession
 
 
 @log_decorator
 @timing_decorator
 @ino.inject
-def main(spark_manager: SparkManager, data_loader: DataLoader):
+def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, data_transformer: DataTransformer):
     df = data_loader.load_data()
     df.show(5)
 
     df_filtered = df.filter(col("X Coordinate").isNotNull())
     df_filtered.show()
 
-    processed_df = spark_manager.timestamp_countby_dayofweek(df)
+    processed_df = data_transformer.timestamp_countby_dayofweek(df)
     processed_df.show()
-    combined_df = spark_manager.add_and_count_crimes_from_specific_day(df_filtered)
-    grouped_df = spark_manager.group_and_count_crimes_by_type(df_filtered)
-    spark_manager.stop_spark()
 
+    combined_df = data_transformer.add_and_count_crimes_from_specific_day(df_filtered, '2018-11-12')
+    combined_df.show()
 
-def provide_spark_manager() -> SparkManager:
-    return SparkManager()
+    grouped_df = data_transformer.group_and_count_crimes_by_type(df_filtered)
+    grouped_df.show()
 
+    spark_session_manager.stop_spark()
 
-def provide_data_loader() -> DataLoader:
-    spark_manager = provide_spark_manager()
-    return DataLoader(spark_manager.get_spark_session())
-
-
-ino.register_provider(provide_spark_manager)
-ino.register_provider(provide_data_loader)
 
 if __name__ == "__main__":
     main()

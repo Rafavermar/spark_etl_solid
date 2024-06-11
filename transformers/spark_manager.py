@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col, date_format, to_timestamp, lit, year, month, concat_ws, format_string
+from pyspark.sql.functions import col, date_format, to_timestamp, lit, year, month, format_string
 from config.config import Config
 from decorators.decorators import log_decorator, timing_decorator
 
@@ -41,13 +41,6 @@ class SparkManager:
         print("Total count:", total_count)
 
         self.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/timestamp_countby_dayofweek.parquet")
-        return result_df
-
-    @log_decorator
-    @timing_decorator
-    def group_and_count_crimes_by_type(self, df):
-        result_df = df.groupBy('Primary Type').count().orderBy('count', ascending=False)
-        result_df.show(10)
         return result_df
 
     @log_decorator

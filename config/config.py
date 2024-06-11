@@ -5,6 +5,9 @@ load_dotenv()
 
 
 class Config:
+    """
+
+    """
     SPARK_APP_NAME = os.getenv('SPARK_APP_NAME')
     SPARK_URL = os.getenv('SPARK_URL')
     SPARK_EXECUTOR_MEMORY = os.getenv('SPARK_EXECUTOR_MEMORY')
@@ -19,9 +22,3 @@ class Config:
     @staticmethod
     def get_data_path(filename):
         return os.path.join(Config.DATA_DIR, filename)
-
-
-# Ensure the data directory exists
-if not os.path.exists(Config.DATA_DIR):
-    os.makedirs(Config.DATA_DIR)
-
