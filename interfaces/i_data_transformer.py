@@ -3,6 +3,12 @@ from pyspark.sql import DataFrame
 
 
 class IDataTransformer(ABC):
+    """
+       Interface for data transformation operations to be implemented by any data transformer class.
+
+       Adheres to:
+           Interface Segregation Principle (ISP): Provides a specific interface for data transformation, ensuring classes only implement what they need.
+       """
     @abstractmethod
     def timestamp_countby_dayofweek(self, df: DataFrame) -> DataFrame:
         """Transforms DataFrame to add timestamp and count by day of the week."""

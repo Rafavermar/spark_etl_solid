@@ -12,6 +12,17 @@ from decorators.decorators import log_decorator, timing_decorator
 @timing_decorator
 @ino.inject
 def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, data_transformer: DataTransformer):
+    """
+      Main function to execute the ETL process using Spark, loading data, and applying transformations.
+
+      Args:
+          spark_session_manager (SparkSessionManager): Manager for Spark session.
+          data_loader (DataLoader): Loader for data from local or remote sources.
+          data_transformer (DataTransformer): Transformer for data processing and aggregation.
+
+      Adheres to:
+          Dependency Inversion Principle (DIP): High-level module (main function) depends on abstractions (interfaces and injected dependencies) rather than concrete implementations.
+      """
     df = data_loader.load_data()
     df.show(5)
 

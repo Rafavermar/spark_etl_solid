@@ -8,41 +8,22 @@ from tqdm import tqdm
 
 class DataLoader:
     """
-        Clase para cargar datos desde una fuente externa a un DataFrame de Spark.
+        DataLoader class to handle data loading from local and remote sources using Spark.
 
-        Esta clase demuestra la adherencia al principio de Inversión de Dependencias (DIP) de SOLID,
-        al recibir la sesión de Spark como una dependencia externa en lugar de crearla internamente.
-        Esto permite que la clase sea más flexible y desacoplada, facilitando la prueba y la extensión
-        de la funcionalidad sin modificar esta clase base.
+        Attributes:
+            spark_session (SparkSession): Spark session for data operations.
 
-        Atributos:
-            spark_session (SparkSession): Una sesión activa de Spark utilizada para leer datos.
-
-        Métodos:
-            load_data: Carga datos desde una ubicación remota especificada y los retorna como un DataFrame.
-        """
+        Adheres to: Single Responsibility Principle (SRP): This class is responsible for data loading operations
+        only. Dependency Inversion Principle (DIP): Depends on the Spark session abstraction, not a concrete
+        implementation.
+    """
     def __init__(self, spark_session: SparkSession):
-        """
-                Inicializa la clase DataLoader con una sesión de Spark.
-
-                Args:
-                    spark_session (SparkSession): La sesión de Spark a utilizar para operaciones de datos.
-        """
         self.spark_session = spark_session
 
     @log_decorator
     @timing_decorator
     def load_data(self):
-        """
-                Carga datos desde un archivo remoto y los convierte en un DataFrame de Spark.
 
-                Este método gestiona la descarga de datos desde una URL remota si el archivo local no existe,
-                lo cual es clave para garantizar que los datos siempre estén actualizados y listos para el procesamiento.
-                Una vez descargados, los datos se leen en un DataFrame de Spark usando la sesión pasada en el constructor.
-
-                Returns:
-                    DataFrame: Un DataFrame de Spark conteniendo los datos cargados.
-        """
         local_file_path = Config.get_data_path(Config.LOCAL_FILENAME)
         if not os.path.exists(local_file_path):
             print("Downloading data...")

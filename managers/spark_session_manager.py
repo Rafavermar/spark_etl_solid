@@ -4,6 +4,16 @@ from config.config import Config
 
 
 class SparkSessionManager(ISparkSessionManager):
+    """
+    SparkSessionManager class to manage the lifecycle of a Spark session.
+
+    Attributes:
+        spark (SparkSession): Spark session for data operations.
+
+    Adheres to:
+        Single Responsibility Principle (SRP): This class is responsible for managing the Spark session.
+        Dependency Inversion Principle (DIP): Implements the ISparkSessionManager interface, adhering to the abstraction.
+    """
     def __init__(self):
         self.spark = SparkSession.builder \
             .appName(Config.SPARK_APP_NAME) \

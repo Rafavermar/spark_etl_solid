@@ -5,6 +5,16 @@ from managers.s3_storage_manager import S3StorageManager
 
 
 class DataTransformer(IDataTransformer):
+    """
+    DataTransformer class to perform various data transformation operations using Spark.
+
+    Attributes:
+        storage_manager (IStorageManager): Manager for handling storage operations.
+
+    Adheres to:
+        Open/Closed Principle (OCP): This class can be extended with new transformation methods without modifying existing code.
+        Dependency Inversion Principle (DIP): Depends on the storage manager abstraction, not a concrete implementation.
+    """
     def __init__(self, storage_manager: S3StorageManager):
         self.storage_manager = storage_manager
 
