@@ -40,8 +40,8 @@ class SparkManager:
         result_df.printSchema()
         print("Total count:", total_count)
 
-        self.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/timestamp_countby_dayofweek.parquet")
-
+        self.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/timestamp_countby_dayofweek.parquet",
+                        'Date')
         return result_df
 
 
@@ -65,7 +65,31 @@ class SparkManager:
 
     @log_decorator
     @timing_decorator
-    def save_to_s3(self, df: DataFrame, path: str):
+    def add_and_count_crimes_from_specific_day(self, df, date_str='2018-11-12'):
+
+        one_day = df.withColumn('Date', to_timestamp(col('Date'), 'MM/dd/yyyy hh:mm:ss a')) \
+            .filter(col('Date') == lit(date_str))
+        print(f"Count of crimes on {date_str}: {one_day.count()}")
+
+        combined_df = df.union(one_day).orderBy('Date', ascending=False)
+        combined_df.show(5)
+
+        self.save_to_s3(combined_df, "s3a://spark-etl-rvm/Silver/add_and_count_crimes_from_specific_day.parquet",
+                        'Date')
+        return combined_df
+
+    @log_decorator
+    @timing_decorator
+    def group_and_count_crimes_by_type(self, df):
+        result_df = df.groupBy('Primary Type').count().orderBy('count', ascending=False)
+        result_df.show(10)
+
+        self.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/group_and_count_crimes_by_type.parquet")
+        return result_df
+
+    @log_decorator
+    @timing_decorator
+    def save_to_s3(self, df: DataFrame, path: str, partition_col=None):
         hadoop_conf = self.spark._jsc.hadoopConfiguration()
         hadoop_conf.set("fs.s3a.access.key", Config.AWS_ACCESS_KEY)
         hadoop_conf.set("fs.s3a.secret.key", Config.AWS_SECRET_KEY)
@@ -75,7 +99,10 @@ class SparkManager:
         hadoop_conf.set("fs.s3a.fast.upload", "true")
         hadoop_conf.set("fs.s3a.fast.upload.buffer", "bytebuffer")
 
-        df.write.mode('overwrite').parquet(path)
+        if partition_col:
+            df.write.partitionBy(partition_col).mode('overwrite').parquet(path)
+        else:
+            df.write.mode('overwrite').parquet(path)
         print(f"DataFrame saved to {path}")
 
     def stop_spark(self):
