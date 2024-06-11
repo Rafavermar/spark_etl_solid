@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col, date_format, to_timestamp, lit
+from pyspark.sql.functions import col, date_format, to_timestamp, lit, year, month, concat_ws
 from config.config import Config
 from decorators.decorators import log_decorator, timing_decorator
 
@@ -40,21 +40,8 @@ class SparkManager:
         result_df.printSchema()
         print("Total count:", total_count)
 
-        self.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/timestamp_countby_dayofweek.parquet",
-                        'Date')
+        self.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/timestamp_countby_dayofweek.parquet")
         return result_df
-
-
-    @log_decorator
-    @timing_decorator
-    def add_and_count_crimes_from_specific_day(self, rc, date_str='2018-11-12'):
-        one_day = self.spark.read.csv('reported-crimes.csv', header=True) \
-            .withColumn('Date', to_timestamp(col('Date'), 'MM/dd/yyyy hh:mm:ss a')) \
-            .filter(col('Date') == lit(date_str))
-        print(f"Count of crimes on {date_str}: {one_day.count()}")
-        combined_df = rc.union(one_day).orderBy('Date', ascending=False)
-        combined_df.show(5)
-        return combined_df
 
     @log_decorator
     @timing_decorator
@@ -67,15 +54,18 @@ class SparkManager:
     @timing_decorator
     def add_and_count_crimes_from_specific_day(self, df, date_str='2018-11-12'):
 
-        one_day = df.withColumn('Date', to_timestamp(col('Date'), 'MM/dd/yyyy hh:mm:ss a')) \
-            .filter(col('Date') == lit(date_str))
+        df = df.withColumn('Date', to_timestamp(col('Date'), 'yyyy-MM-dd HH:mm:ss'))
+
+        one_day = df.filter(col('Date') == lit(date_str))
         print(f"Count of crimes on {date_str}: {one_day.count()}")
 
         combined_df = df.union(one_day).orderBy('Date', ascending=False)
         combined_df.show(5)
 
+        combined_df = combined_df.withColumn('year_month', concat_ws('-', year(col('Date')), month(col('Date'))))
+
         self.save_to_s3(combined_df, "s3a://spark-etl-rvm/Silver/add_and_count_crimes_from_specific_day.parquet",
-                        'Date')
+                        'year_month')
         return combined_df
 
     @log_decorator
