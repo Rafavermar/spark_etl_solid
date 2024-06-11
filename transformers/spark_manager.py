@@ -1,5 +1,5 @@
 from pyspark.sql import SparkSession, DataFrame
-from pyspark.sql.functions import col, date_format, to_timestamp, lit, year, month, concat_ws
+from pyspark.sql.functions import col, date_format, to_timestamp, lit, year, month, concat_ws, format_string
 from config.config import Config
 from decorators.decorators import log_decorator, timing_decorator
 
@@ -54,15 +54,20 @@ class SparkManager:
     @timing_decorator
     def add_and_count_crimes_from_specific_day(self, df, date_str='2018-11-12'):
 
-        df = df.withColumn('Date', to_timestamp(col('Date'), 'yyyy-MM-dd HH:mm:ss'))
+        df = df.withColumn('Date', to_timestamp(col('Date'), 'MM/dd/yyyy hh:mm:ss a'))
 
-        one_day = df.filter(col('Date') == lit(date_str))
+        date_target = to_timestamp(lit(date_str), 'yyyy-MM-dd')
+
+        one_day = df.filter(col('Date').cast("date") == date_target.cast("date"))
         print(f"Count of crimes on {date_str}: {one_day.count()}")
 
         combined_df = df.union(one_day).orderBy('Date', ascending=False)
         combined_df.show(5)
 
-        combined_df = combined_df.withColumn('year_month', concat_ws('-', year(col('Date')), month(col('Date'))))
+        combined_df = combined_df.withColumn(
+            'year_month',
+            format_string("%d-%02d", year(col('Date')), month(col('Date')))
+        )
 
         self.save_to_s3(combined_df, "s3a://spark-etl-rvm/Silver/add_and_count_crimes_from_specific_day.parquet",
                         'year_month')
