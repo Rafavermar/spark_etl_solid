@@ -12,9 +12,14 @@ from pyspark.sql import SparkSession
 def main(spark_manager: SparkManager, data_loader: DataLoader):
     df = data_loader.load_data()
     df.show(5)
-    df.filter(col("X Coordinate").isNotNull()).show()
+
+    df_filtered = df.filter(col("X Coordinate").isNotNull())
+    df_filtered.show()
+
     processed_df = spark_manager.timestamp_countby_dayofweek(df)
     processed_df.show()
+    combined_df = spark_manager.add_and_count_crimes_from_specific_day(df_filtered)
+    grouped_df = spark_manager.group_and_count_crimes_by_type(df_filtered)
     spark_manager.stop_spark()
 
 

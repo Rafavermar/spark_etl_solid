@@ -44,6 +44,25 @@ class SparkManager:
 
         return result_df
 
+
+    @log_decorator
+    @timing_decorator
+    def add_and_count_crimes_from_specific_day(self, rc, date_str='2018-11-12'):
+        one_day = self.spark.read.csv('reported-crimes.csv', header=True) \
+            .withColumn('Date', to_timestamp(col('Date'), 'MM/dd/yyyy hh:mm:ss a')) \
+            .filter(col('Date') == lit(date_str))
+        print(f"Count of crimes on {date_str}: {one_day.count()}")
+        combined_df = rc.union(one_day).orderBy('Date', ascending=False)
+        combined_df.show(5)
+        return combined_df
+
+    @log_decorator
+    @timing_decorator
+    def group_and_count_crimes_by_type(self, df):
+        result_df = df.groupBy('Primary Type').count().orderBy('count', ascending=False)
+        result_df.show(10)
+        return result_df
+
     @log_decorator
     @timing_decorator
     def save_to_s3(self, df: DataFrame, path: str):
