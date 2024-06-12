@@ -17,35 +17,56 @@ This project implements an Extract, Transform, and Load (ETL) process for crime 
 ```
 solid_etl_spark/
 │
-├── .venv/ # Virtual environment
-├── config/ # Configuration module
+├── .venv/ 
+├── config/ 
 │ ├── init.py
-│ └── config.py # Project configurations
-├── containers/ # Dependency injection containers
-│ ├── init.py
-│ └── containers.py
+│ └── config.py
+│ └── environment_setup.py
+
+├── containers.py
+
 ├── data/
-│ ├── output/ # Directory for output data
-│ └── Chicago_crime_data.csv# Sample data file
-├── decorators/ # Decorators for logging and timing
+│ ├── output/
+│ └── Chicago_crime_data.csv
+
+├── decorators/
 │ ├── init.py
 │ └── decorators.py
-├── etl/ # ETL process scripts
+
+├── etl/ 
 │ ├── init.py
-│ └── main.py # Main script that runs the ETL process
-├── extractors/ # Data extraction module
+│ └── main.py
+
+├── extractors/
 │ ├── init.py
-│ └── data_loader.py # Module to load and download data
-├── test/ # Test scripts
+│ └── data_loader.py
+
+├── interfaces/
+│ ├── init.py
+│ └── i_data_transformers.py
+│ └── i_spark_session_manager.py
+│ └── i_storage_manager.py
+
+├── managers/
+│ ├── init.py
+│ └── data_transformers.py
+│ └── s3_storage_manager.py
+│ └── spark_session_manager.py
+
+├── test/
 │ └── init.py
-├── transformers/ # Data transformation module
+│ └── mock_storage_manager.py
+
+├── transformers/ # NO MORE NEEDED | IT WAS PROPERLY SPLITTED INTO MANAGERS AND INTERFACES MODULES
 │ ├── init.py
-│ └── spark_manager.py # Manages Spark sessions and operations
-├── .env # File for environment variables
-├── .gitignore # Specifies files to be ignored in git
-├── etl.log # Log file
-├── README.md # This file
-└── requirements.txt # Python dependencies
+│ └── spark_manager.py
+│ └── interfaces.py
+
+├── .env 
+├── .gitignore 
+├── etl.log
+├── README.md
+└── requirements.txt
 ```
 
 ## Setup
