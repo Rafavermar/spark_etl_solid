@@ -36,9 +36,11 @@ class Config:
     LOCAL_FILENAME = os.getenv('LOCAL_FILENAME')
     POLICE_STATION_URL = os.getenv('POLICE_STATION_URL')
     BRONZE_S3_PATH = os.getenv('BRONZE_S3_PATH')
+    SILVER_S3_PATH = os.getenv('SILVER_S3_PATH')
     AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
     AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
     AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
+    LOCAL_DIR = os.getenv('LOCAL_DIR')
 
     @staticmethod
     def get_data_path(filename):

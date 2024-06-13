@@ -21,7 +21,7 @@ class SparkSessionManager(ISparkSessionManager):
             .config("spark.executor.memory", Config.SPARK_EXECUTOR_MEMORY) \
             .config("spark.executor.cores", Config.SPARK_EXECUTOR_CORES) \
             .config("spark.cores.max", Config.SPARK_CORES_MAX) \
-            .config("spark.local.dir", "C:/Users/RafaelVera-Marañón/tmp/spark-temp") \
+            .config("spark.local.dir", Config.LOCAL_DIR) \
             .config("spark.hadoop.fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem") \
             .config("spark.hadoop.fs.s3a.access.key", Config.AWS_ACCESS_KEY) \
             .config("spark.hadoop.fs.s3a.secret.key", Config.AWS_SECRET_KEY) \
