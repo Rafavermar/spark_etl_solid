@@ -1,5 +1,7 @@
 import in_n_out as ino
 import containers
+
+from src.config.config import Config
 from src.extractors.data_loader import DataLoader
 from src.managers.spark_session_manager import SparkSessionManager
 from src.managers.data_transformer import DataTransformer
@@ -23,7 +25,7 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
       Adheres to:
           Dependency Inversion Principle (DIP): High-level module (main function) depends on abstractions (interfaces and injected dependencies) rather than concrete implementations.
       """
-    use_s3 = os.getenv('USE_S3', 'True').lower() in ('true', '1', 't')
+    use_s3 = Config.USE_S3
 
     df = data_loader.load_data(use_s3=use_s3)
     df.show(5)
