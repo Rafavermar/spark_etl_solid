@@ -15,53 +15,62 @@ This project implements an Extract, Transform, and Load (ETL) process for crime 
 ## Project Structure
 ![Project_architecture.png](src/Assets/Project_architecture.png)
 ```
+
 solid_etl_spark/
 │
-├── .venv/ 
-├── config/ 
-│ ├── init.py
-│ └── config.py
-│ └── environment_setup.py
+├── src/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── containers.py
 
-├── containers.py
+│   ├── aws_queries/
 
-├── data/
-│ ├── output/
-│ └── Chicago_crime_data.csv
+│   ├── config
+│   └──__init_.py
+│   └── config.py
+│   └── environment_setup.py
 
-├── decorators/
-│ ├── init.py
-│ └── decorators.py
+│   ├── data
+│   └── output/
+│   └── Chicago_crime_data.csv
+│   └── police-station.csv
 
-├── etl/ 
-│ ├── init.py
-│ └── main.py
+│   ├── decorators
+│   └──__init_.py
+│   └── decorators.py
 
-├── extractors/
-│ ├── init.py
-│ └── data_loader.py
+│   ├── emr_setup
+│   └──__init_.py
 
-├── interfaces/
-│ ├── init.py
-│ └── i_data_transformers.py
-│ └── i_spark_session_manager.py
-│ └── i_storage_manager.py
+│   ├── extractors
+│   └──__init_.py
+│   └── data_loader.py
 
-├── managers/
-│ ├── init.py
-│ └── data_transformers.py
-│ └── s3_storage_manager.py
-│ └── spark_session_manager.py
+│   ├── interfaces
+│   └──__init_.py
+│   └── i_data_transformer.py
+│   └── i_spark_session_manager.py
+│   └── i_storage_manager.py
 
-├── test/
-│ └── init.py
-│ └── mock_storage_manager.py
+│   ├── managers
+│   └──__init_.py
+│   └── data_transformer.py
+│   └── s3_storage_manager.py
+│   └── spark_session_manager.py
 
-├── .env 
-├── .gitignore 
-├── etl.log
-├── README.md
-└── requirements.txt
+│   ├── s3_upload/
+│   └──__init_.py
+│   └── s3_uploader.py
+│
+├── test
+│   └──__init_.py
+│   └── mock_storage_manager.py
+
+├── .env
+├── .gitignore
+├── requirements.txt
+└── README.md
+
 ```
 
 ## Setup
