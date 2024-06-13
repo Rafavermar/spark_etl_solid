@@ -57,11 +57,6 @@ solid_etl_spark/
 │ └── init.py
 │ └── mock_storage_manager.py
 
-├── transformers/ # NO MORE NEEDED | IT WAS PROPERLY SPLITTED INTO MANAGERS AND INTERFACES MODULES
-│ ├── init.py
-│ └── spark_manager.py
-│ └── interfaces.py
-
 ├── .env 
 ├── .gitignore 
 ├── etl.log
