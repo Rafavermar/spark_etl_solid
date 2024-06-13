@@ -1,6 +1,6 @@
 from src.interfaces.i_storage_manager import IStorageManager
 from pyspark.sql import SparkSession, DataFrame
-from src.managers import S3StorageManager
+from src.managers.s3_storage_manager import S3StorageManager
 
 
 class MockStorageManager(IStorageManager):
