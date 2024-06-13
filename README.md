@@ -13,7 +13,7 @@ This project implements an Extract, Transform, and Load (ETL) process for crime 
 - **Data storage**: Saves processed data to AWS S3 in Parquet format.
 
 ## Project Structure
-![Project_architecture.png](Assets/Project_architecture.png)
+![Project_architecture.png](src/Assets/Project_architecture.png)
 ```
 solid_etl_spark/
 │
@@ -81,7 +81,7 @@ solid_etl_spark/
 To run the project, navigate to the project root directory and execute:
 
 ```bash
-python etl/main.py
+python main/main.py
 ```
 
 ## License

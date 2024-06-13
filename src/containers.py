@@ -1,8 +1,8 @@
 import in_n_out as ino
-from extractors.data_loader import DataLoader
-from managers.spark_session_manager import SparkSessionManager
-from managers.data_transformer import DataTransformer
-from managers.s3_storage_manager import S3StorageManager
+from src.extractors.data_loader import DataLoader
+from src.managers.spark_session_manager import SparkSessionManager
+from src.managers.data_transformer import DataTransformer
+from src.managers.s3_storage_manager import S3StorageManager
 
 
 def provide_spark_session_manager() -> SparkSessionManager:

@@ -1,7 +1,7 @@
 import os
 from pyspark.sql import SparkSession
-from config.config import Config
-from decorators.decorators import log_decorator, timing_decorator
+from src.config.config import Config
+from src.decorators.decorators import log_decorator, timing_decorator
 import boto3
 
 

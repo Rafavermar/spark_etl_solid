@@ -1,8 +1,8 @@
-from interfaces.i_storage_manager import IStorageManager
+from src.interfaces.i_storage_manager import IStorageManager
 from pyspark.sql import DataFrame
 from pyspark.sql.session import SparkSession
-from config.config import Config
-from decorators.decorators import log_decorator, timing_decorator
+from src.config.config import Config
+from src.decorators.decorators import log_decorator, timing_decorator
 
 
 class S3StorageManager(IStorageManager):

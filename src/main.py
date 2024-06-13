@@ -1,11 +1,10 @@
 import in_n_out as ino
 import containers
-from extractors.data_loader import DataLoader
-from managers.s3_storage_manager import S3StorageManager
-from managers.spark_session_manager import SparkSessionManager
-from managers.data_transformer import DataTransformer
+from src.extractors.data_loader import DataLoader
+from src.managers.spark_session_manager import SparkSessionManager
+from src.managers.data_transformer import DataTransformer
 from pyspark.sql.functions import col
-from decorators.decorators import log_decorator, timing_decorator
+from src.decorators.decorators import log_decorator, timing_decorator
 import os
 
 

@@ -1,5 +1,5 @@
 import os
-from config.config import Config
+from src.config.config import Config
 
 
 class EnvironmentSetup:

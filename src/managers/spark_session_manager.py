@@ -1,6 +1,6 @@
-from interfaces.i_spark_session_manager import ISparkSessionManager
+from src.interfaces.i_spark_session_manager import ISparkSessionManager
 from pyspark.sql import SparkSession
-from config.config import Config
+from src.config.config import Config
 
 
 class SparkSessionManager(ISparkSessionManager):

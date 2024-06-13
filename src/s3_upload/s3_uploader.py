@@ -1,13 +1,12 @@
 import boto3
 import os
 import requests
-from config.config import Config
-from config.environment_setup import EnvironmentSetup
+from src.config.config import Config
+from src.config.environment_setup import EnvironmentSetup
 import logging
 from boto3.s3.transfer import TransferConfig
-from tqdm import tqdm
-from decorators.decorators import log_decorator
-from decorators.decorators import timing_decorator
+from src.decorators.decorators import log_decorator
+from src.decorators.decorators import timing_decorator
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 

@@ -1,7 +1,7 @@
-from interfaces.i_data_transformer import IDataTransformer
+from src.interfaces.i_data_transformer import IDataTransformer
 from pyspark.sql import DataFrame
 from pyspark.sql.functions import col, date_format, to_timestamp, lit, format_string, year, month
-from managers.s3_storage_manager import S3StorageManager
+from src.managers.s3_storage_manager import S3StorageManager
 
 
 class DataTransformer(IDataTransformer):
@@ -31,7 +31,7 @@ class DataTransformer(IDataTransformer):
         result_df = df.withColumn("timestamp", to_timestamp(col("Date"), "MM/dd/yyyy hh:mm:ss a")) \
             .withColumn("day_of_week", date_format(col("timestamp"), "E")) \
             .groupBy("day_of_week").count()
-        self.storage_manager.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/timestamp_countby_dayofweek.parquet")
+        self.storage_manager.save_to_s3(result_df, "s3a://spark-main-rvm/Silver/timestamp_countby_dayofweek.parquet")
         return result_df
 
     def group_and_count_crimes_by_type(self, df: DataFrame) -> DataFrame:
@@ -45,7 +45,7 @@ class DataTransformer(IDataTransformer):
             DataFrame: Transformed DataFrame with counts by crime type.
         """
         result_df = df.groupBy('Primary Type').count().orderBy('count', ascending=False)
-        self.storage_manager.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/group_and_count_crimes_by_type.parquet")
+        self.storage_manager.save_to_s3(result_df, "s3a://spark-main-rvm/Silver/group_and_count_crimes_by_type.parquet")
         return result_df
 
     def add_and_count_crimes_from_specific_day(self, df: DataFrame, date_str='2018-11-12') -> DataFrame:
@@ -75,6 +75,6 @@ class DataTransformer(IDataTransformer):
         )
 
         self.storage_manager.save_to_s3(combined_df,
-                                        "s3a://spark-etl-rvm/Silver/add_and_count_crimes_from_specific_day.parquet",
+                                        "s3a://spark-main-rvm/Silver/add_and_count_crimes_from_specific_day.parquet",
                                         'year_month')
         return combined_df
