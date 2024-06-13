@@ -3,8 +3,14 @@ SPARK_URL=local[3]
 SPARK_EXECUTOR_MEMORY=1g
 SPARK_EXECUTOR_CORES=3
 SPARK_CORES_MAX=3
-DATA_DIR=./data
+DATA_DIR=C:\Users\RafaelVera-Marañón\PycharmProjects\solid_etl_spark\src\data
 REMOTE_DATA_URL=https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.csv?accessType=DOWNLOAD
 LOCAL_FILENAME=Chicago_crime_data.csv
+
+POLICE_STATION_URL=https://data.cityofchicago.org/resource/z8bn-74gv.csv
+BRONZE_S3_PATH=s3://spark-etl-rvm/Bronze/
+AWS_S3_BUCKET=spark-etl-rvm
+
 AWS_ACCESS_KEY=
 AWS_SECRET_KEY=
+USE_S3=True#False for local loading
