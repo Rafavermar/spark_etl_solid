@@ -6,6 +6,7 @@ from managers.spark_session_manager import SparkSessionManager
 from managers.data_transformer import DataTransformer
 from pyspark.sql.functions import col
 from decorators.decorators import log_decorator, timing_decorator
+import os
 
 
 @log_decorator
@@ -23,7 +24,9 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
       Adheres to:
           Dependency Inversion Principle (DIP): High-level module (main function) depends on abstractions (interfaces and injected dependencies) rather than concrete implementations.
       """
-    df = data_loader.load_data()
+    use_s3 = os.getenv('USE_S3', 'True').lower() in ('true', '1', 't')
+
+    df = data_loader.load_data(use_s3=use_s3)
     df.show(5)
 
     df_filtered = df.filter(col("X Coordinate").isNotNull())

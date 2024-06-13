@@ -19,6 +19,15 @@ class DataTransformer(IDataTransformer):
         self.storage_manager = storage_manager
 
     def timestamp_countby_dayofweek(self, df: DataFrame) -> DataFrame:
+        """
+        Transform the DataFrame to count occurrences by day of the week and save the result to S3.
+
+        Args:
+            df (DataFrame): Input DataFrame containing the data.
+
+        Returns:
+            DataFrame: Transformed DataFrame with counts by day of the week.
+        """
         result_df = df.withColumn("timestamp", to_timestamp(col("Date"), "MM/dd/yyyy hh:mm:ss a")) \
             .withColumn("day_of_week", date_format(col("timestamp"), "E")) \
             .groupBy("day_of_week").count()
@@ -26,11 +35,30 @@ class DataTransformer(IDataTransformer):
         return result_df
 
     def group_and_count_crimes_by_type(self, df: DataFrame) -> DataFrame:
+        """
+        Group the DataFrame by crime type, count occurrences, and save the result to S3.
+
+        Args:
+            df (DataFrame): Input DataFrame containing the data.
+
+        Returns:
+            DataFrame: Transformed DataFrame with counts by crime type.
+        """
         result_df = df.groupBy('Primary Type').count().orderBy('count', ascending=False)
         self.storage_manager.save_to_s3(result_df, "s3a://spark-etl-rvm/Silver/group_and_count_crimes_by_type.parquet")
         return result_df
 
     def add_and_count_crimes_from_specific_day(self, df: DataFrame, date_str='2018-11-12') -> DataFrame:
+        """
+        Add crimes from a specific day to the DataFrame, count occurrences, and save the result to S3.
+
+        Args:
+            df (DataFrame): Input DataFrame containing the data.
+            date_str (str): The specific date to filter and count crimes.
+
+        Returns:
+            DataFrame: Transformed DataFrame with crimes from the specific day.
+        """
         df = df.withColumn('Date', to_timestamp(col('Date'), 'MM/dd/yyyy hh:mm:ss a'))
 
         date_target = to_timestamp(lit(date_str), 'yyyy-MM-dd')

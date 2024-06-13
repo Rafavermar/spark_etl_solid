@@ -17,8 +17,11 @@ class Config:
             DATA_DIR (str): Directory for storing data.
             REMOTE_DATA_URL (str): URL for remote data source.
             LOCAL_FILENAME (str): Local filename for downloaded data.
+            POLICE_STATION_URL (str): URL for police station data.
+            BRONZE_S3_PATH (str): S3 path for Bronze data storage.
             AWS_ACCESS_KEY (str): AWS access key for S3.
             AWS_SECRET_KEY (str): AWS secret key for S3.
+            AWS_S3_BUCKET (str): AWS S3 bucket name.
 
         Adheres to:
             Single Responsibility Principle (SRP): This class is solely responsible for loading configuration settings.
@@ -31,8 +34,11 @@ class Config:
     DATA_DIR = os.getenv('DATA_DIR')
     REMOTE_DATA_URL = os.getenv('REMOTE_DATA_URL')
     LOCAL_FILENAME = os.getenv('LOCAL_FILENAME')
+    POLICE_STATION_URL = os.getenv('POLICE_STATION_URL')
+    BRONZE_S3_PATH = os.getenv('BRONZE_S3_PATH')
     AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
     AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
+    AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
 
     @staticmethod
     def get_data_path(filename):
