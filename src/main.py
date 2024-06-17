@@ -7,6 +7,8 @@ from src.managers.spark_session_manager import SparkSessionManager
 from src.managers.data_transformer import DataTransformer
 from pyspark.sql.functions import col
 from src.decorators.decorators import log_decorator, timing_decorator
+from src.emr_setup.emr_cluster import EMRClusterManager
+from src.emr_setup.emr_job import EMRJobManager
 import os
 
 
@@ -22,9 +24,9 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
           data_loader (DataLoader): Loader for data from local or remote sources.
           data_transformer (DataTransformer): Transformer for data processing and aggregation.
 
-      Adheres to:
-          Dependency Inversion Principle (DIP): High-level module (main function) depends on abstractions (interfaces and injected dependencies) rather than concrete implementations.
-      """
+      Adheres to: Dependency Inversion Principle (DIP): High-level module (main function) depends on abstractions (
+      interfaces and injected dependencies) rather than concrete implementations.
+    """
     use_s3 = Config.USE_S3
 
     df = data_loader.load_data(use_s3=use_s3)
@@ -43,6 +45,23 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
     grouped_df.show()
 
     spark_session_manager.stop_spark()
+
+
+# Set up and submit the EMR job
+# emr_manager = EMRClusterManager()
+# cluster_name = 'MySparkCluster'
+# cluster_id = emr_manager.get_existing_cluster_id(cluster_name)
+#
+# if not cluster_id:
+#     cluster_id = emr_manager.create_cluster(cluster_name)
+#     emr_manager.wait_for_cluster_ready(cluster_id)
+# else:
+#     print(f"Using existing cluster {cluster_id}")
+#
+# job_manager = EMRJobManager()
+# emr_script_s3_path = "s3://your-bucket/path/to/pyspark_job.py"
+# step_id = job_manager.add_pyspark_step(cluster_id, emr_script_s3_path)
+# job_manager.wait_for_step_completion(cluster_id, step_id)
 
 
 if __name__ == "__main__":

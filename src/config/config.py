@@ -22,6 +22,7 @@ class Config:
             AWS_ACCESS_KEY (str): AWS access key for S3.
             AWS_SECRET_KEY (str): AWS secret key for S3.
             AWS_S3_BUCKET (str): AWS S3 bucket name.
+            PYSPARK_JOB_PATH (str): Local path to the PySpark job script
 
         Adheres to:
             Single Responsibility Principle (SRP): This class is solely responsible for loading configuration settings.
@@ -42,6 +43,7 @@ class Config:
     AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
     AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
     LOCAL_DIR = os.getenv('LOCAL_DIR')
+    PYSPARK_JOB_PATH = os.getenv('PYSPARK_JOB_PATH')
 
     @staticmethod
     def get_data_path(filename):
