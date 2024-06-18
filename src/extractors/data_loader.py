@@ -4,6 +4,7 @@ from src.config.config import Config
 from src.decorators.decorators import log_decorator, timing_decorator
 import boto3
 
+
 class DataLoader:
     def __init__(self, spark_session: SparkSession, use_s3: bool):
         self.spark_session = spark_session
