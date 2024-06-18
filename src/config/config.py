@@ -26,7 +26,6 @@ class Config:
         Adheres to:
             Single Responsibility Principle (SRP): This class is solely responsible for loading configuration settings.
         """
-    USE_S3 = os.getenv('USE_S3')
     SPARK_APP_NAME = os.getenv('SPARK_APP_NAME')
     SPARK_URL = os.getenv('SPARK_URL')
     SPARK_EXECUTOR_MEMORY = os.getenv('SPARK_EXECUTOR_MEMORY')
