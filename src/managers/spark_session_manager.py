@@ -10,9 +10,8 @@ class SparkSessionManager(ISparkSessionManager):
     Attributes:
         spark (SparkSession): Spark session for data operations.
 
-    Adheres to:
-        Single Responsibility Principle (SRP): This class is responsible for managing the Spark session.
-        Dependency Inversion Principle (DIP): Implements the ISparkSessionManager interface, adhering to the abstraction.
+    Adheres to: Single Responsibility Principle (SRP): This class is responsible for managing the Spark session.
+    Dependency Inversion Principle (DIP): Implements the ISparkSessionManager interface, adhering to the abstraction.
     """
     def __init__(self):
         self.spark = SparkSession.builder \
@@ -30,6 +29,7 @@ class SparkSessionManager(ISparkSessionManager):
                                            "com.amazonaws:aws-java-sdk-bundle:1.11.901") \
             .config('spark.hadoop.fs.s3a.aws.credentials.provider', 'org.apache.hadoop.fs.s3a'
                                                                     '.SimpleAWSCredentialsProvider') \
+            .config("spark.hadoop.fs.s3a.impl.disable.cache", "true") \
             .config("hadoop.home.dir", "C:/winutils") \
             .getOrCreate()
 

@@ -1,13 +1,11 @@
+import argparse
 import in_n_out as ino
-import containers
-
-from src.config.config import Config
+from src.containers import provide_spark_session_manager
 from src.extractors.data_loader import DataLoader
 from src.managers.spark_session_manager import SparkSessionManager
 from src.managers.data_transformer import DataTransformer
 from pyspark.sql.functions import col
 from src.decorators.decorators import log_decorator, timing_decorator
-import os
 
 
 @log_decorator
@@ -22,12 +20,11 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
           data_loader (DataLoader): Loader for data from local or remote sources.
           data_transformer (DataTransformer): Transformer for data processing and aggregation.
 
-      Adheres to: Dependency Inversion Principle (DIP): High-level module (main function) depends on abstractions (
+      Adheres to: Dependency Inversion Principle (DIP): High-level module (main function) depends on abstrations (
       interfaces and injected dependencies) rather than concrete implementations.
     """
-    use_s3 = Config.USE_S3
 
-    df = data_loader.load_data(use_s3=use_s3)
+    df = data_loader.load_data()
     df.show(5)
 
     df_filtered = df.filter(col("X Coordinate").isNotNull())
@@ -46,6 +43,17 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run the ETL job with optional S3 loading.")
+    parser.add_argument("--use-s3", action="store_true", help="Load data from S3 instead of local files.")
+    args = parser.parse_args()
+
+    def provide_data_loader() -> DataLoader:
+        print("Registrando DataLoader")
+        spark_session_manager = provide_spark_session_manager()
+        return DataLoader(spark_session_manager.get_spark_session(), use_s3=args.use_s3)
+
+    ino.register_provider(provide_data_loader)
+    print("DataLoader registrado")
 
     main()
 

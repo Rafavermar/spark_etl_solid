@@ -1,5 +1,5 @@
 import in_n_out as ino
-from src.extractors.data_loader import DataLoader
+
 from src.managers.spark_session_manager import SparkSessionManager
 from src.managers.data_transformer import DataTransformer
 from src.managers.s3_storage_manager import S3StorageManager
@@ -8,12 +8,6 @@ from src.managers.s3_storage_manager import S3StorageManager
 def provide_spark_session_manager() -> SparkSessionManager:
     print("Registrando SparkSessionManager")
     return SparkSessionManager()
-
-
-def provide_data_loader() -> DataLoader:
-    print("Registrando DataLoader")
-    spark_session_manager = provide_spark_session_manager()
-    return DataLoader(spark_session_manager.get_spark_session())
 
 
 def provide_storage_manager() -> S3StorageManager:
@@ -30,9 +24,6 @@ def provide_data_transformer() -> DataTransformer:
 
 ino.register_provider(provide_spark_session_manager)
 print("SparkSessionManager registrado")
-
-ino.register_provider(provide_data_loader)
-print("DataLoader registrado")
 
 ino.register_provider(provide_data_transformer)
 print("DataTransformer registrado")
