@@ -11,7 +11,8 @@ from src.decorators.decorators import log_decorator, timing_decorator
 @log_decorator
 @timing_decorator
 @ino.inject
-def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, data_transformer: DataTransformer):
+def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, data_transformer: DataTransformer,
+         use_s3=bool):
     """
       Main function to execute the ETL process using Spark, loading data, and applying transformations.
 
@@ -22,9 +23,10 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
 
       Adheres to: Dependency Inversion Principle (DIP): High-level module (main function) depends on abstrations (
       interfaces and injected dependencies) rather than concrete implementations.
+      :param use_s3:
     """
 
-    df = data_loader.load_data()
+    df = data_loader.load_data(use_s3=use_s3)
     df.show(5)
 
     df_filtered = df.filter(col("X Coordinate").isNotNull())
@@ -47,16 +49,18 @@ if __name__ == "__main__":
     parser.add_argument("--use-s3", action="store_true", help="Load data from S3 instead of local files.")
     args = parser.parse_args()
 
+
     def provide_data_loader() -> DataLoader:
         print("Registrando DataLoader")
         spark_session_manager = provide_spark_session_manager()
         return DataLoader(spark_session_manager.get_spark_session(), use_s3=args.use_s3)
+
 
     ino.register_provider(provide_data_loader)
     print("DataLoader registrado")
 
     main()
 
-    from src.emr_setup import emr_cluster
+  # from src.emr_setup import emr_cluster
 
-    emr_cluster.main()
+  # emr_cluster.main()
