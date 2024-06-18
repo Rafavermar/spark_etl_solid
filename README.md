@@ -11,7 +11,10 @@ This project implements an Extract, Transform, and Load (ETL) process for crime 
 - **Automatic data download**: The script checks if the CSV file already exists; if not, it downloads it automatically.
 - **Data processing with PySpark**: Uses Spark to transform data, including date format conversions and aggregations.
 - **Data storage**: Saves processed data to AWS S3 in Parquet format.
-
+- **Flexible data source selection**: Use the --use-s3 parameter to specify whether to load data from local files or from S3.
+ ```bash
+python main.py --use-s3 
+```
 ## Project Structure
 ![Project_architecture.png](src/Assets/Project_architecture.png)
 ```
@@ -28,6 +31,7 @@ solid_etl_spark/
 ├── data/
 │ ├── output/
 │ └── Chicago_crime_data.csv
+  └── police-station.csv
 
 ├── decorators/
 │ ├── init.py
@@ -81,7 +85,11 @@ solid_etl_spark/
 To run the project, navigate to the project root directory and execute:
 
 ```bash
-python main/main.py
+python src/main.py --use-s3
+```
+or if you want to load data from local files, do not include the flag:
+```bash
+python src/main.py
 ```
 
 ## License
