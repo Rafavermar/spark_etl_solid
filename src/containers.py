@@ -10,10 +10,10 @@ def provide_spark_session_manager() -> SparkSessionManager:
     return SparkSessionManager()
 
 
-def provide_data_loader() -> DataLoader:
+def provide_data_loader(use_s3: bool) -> DataLoader:
     print("Registrando DataLoader")
     spark_session_manager = provide_spark_session_manager()
-    return DataLoader(spark_session_manager.get_spark_session())
+    return DataLoader(spark_session_manager.get_spark_session(), use_s3=use_s3)
 
 
 def provide_storage_manager() -> S3StorageManager:
@@ -31,8 +31,6 @@ def provide_data_transformer() -> DataTransformer:
 ino.register_provider(provide_spark_session_manager)
 print("SparkSessionManager registrado")
 
-ino.register_provider(provide_data_loader)
-print("DataLoader registrado")
 
 ino.register_provider(provide_data_transformer)
 print("DataTransformer registrado")
