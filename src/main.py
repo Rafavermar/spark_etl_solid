@@ -11,8 +11,7 @@ from src.decorators.decorators import log_decorator, timing_decorator
 @log_decorator
 @timing_decorator
 @ino.inject
-def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, data_transformer: DataTransformer,
-         use_s3=bool):
+def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, data_transformer: DataTransformer):
     """
       Main function to execute the ETL process using Spark, loading data, and applying transformations.
 
@@ -26,7 +25,7 @@ def main(spark_session_manager: SparkSessionManager, data_loader: DataLoader, da
       :param use_s3:
     """
 
-    df = data_loader.load_data(use_s3=use_s3)
+    df = data_loader.load_data()
     df.show(5)
 
     df_filtered = df.filter(col("X Coordinate").isNotNull())
