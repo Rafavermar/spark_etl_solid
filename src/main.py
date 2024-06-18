@@ -1,11 +1,7 @@
 import argparse
-
 import in_n_out as ino
-import os
 
-import containers
-
-from src.config.config import Config
+import src.containers
 from src.extractors.data_loader import DataLoader
 from src.managers.spark_session_manager import SparkSessionManager
 from src.managers.data_transformer import DataTransformer
@@ -54,13 +50,12 @@ if __name__ == "__main__":
     parser.add_argument("--use-s3", action="store_true", help="Load data from S3 instead of local files.")
     args = parser.parse_args()
 
-
     def provide_data_loader() -> DataLoader:
         print("Registrando DataLoader")
-        spark_session_manager = containers.provide_spark_session_manager()
+        spark_session_manager = src.containers.provide_spark_session_manager()
         return DataLoader(spark_session_manager.get_spark_session(), use_s3=args.use_s3)
-
 
     ino.register_provider(provide_data_loader)
     print("DataLoader registrado")
+
     main(use_s3=args.use_s3)
