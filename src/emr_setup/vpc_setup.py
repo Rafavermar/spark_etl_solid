@@ -10,6 +10,13 @@ class VPCSetup:
         self.ec2_client = boto3.client('ec2', region_name='us-east-1')
 
     def create_vpc(self):
+        # Check if VPC already exists
+        vpcs = self.ec2_client.describe_vpcs()
+        for vpc in vpcs['Vpcs']:
+            if 'Tags' in vpc and any(tag['Key'] == 'Name' and tag['Value'] == 'MyVPC' for tag in vpc['Tags']):
+                logging.info(f"VPC 'MyVPC' already exists with ID: {vpc['VpcId']}")
+                return vpc['VpcId'], self.get_subnet_id(vpc['VpcId'])
+
         try:
             response = self.ec2_client.create_vpc(CidrBlock='10.0.0.0/16')
             vpc_id = response['Vpc']['VpcId']
@@ -44,8 +51,13 @@ class VPCSetup:
             logging.error(e)
             raise
 
+    def get_subnet_id(self, vpc_id):
+        subnets = self.ec2_client.describe_subnets(Filters=[{'Name': 'vpc-id', 'Values': [vpc_id]}])
+        if subnets['Subnets']:
+            return subnets['Subnets'][0]['SubnetId']
+        return None
+
 
 if __name__ == "__main__":
     vpc_setup = VPCSetup()
-    vpc_setup.create_vpc()
-# NECESITO TAMBIEN UNA POLICY PARA ESTE VPC?
+    vpc_id, subnet_id = vpc_setup.create_vpc()

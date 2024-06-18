@@ -44,6 +44,8 @@ class Config:
     AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
     LOCAL_DIR = os.getenv('LOCAL_DIR')
     PYSPARK_JOB_PATH = os.getenv('PYSPARK_JOB_PATH')
+    LOG_BUCKET = os.getenv('LOG_BUCKET')
+    EC2_KEY_NAME = os.getenv('EC2_KEY_NAME')
 
     @staticmethod
     def get_data_path(filename):
