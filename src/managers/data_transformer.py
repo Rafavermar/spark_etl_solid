@@ -31,7 +31,9 @@ class DataTransformer(IDataTransformer):
         """
         result_df = df.withColumn("timestamp", to_timestamp(col("Date"), "MM/dd/yyyy hh:mm:ss a")) \
             .withColumn("day_of_week", date_format(col("timestamp"), "E")) \
-            .groupBy("day_of_week").count()
+            .groupBy("day_of_week").count() \
+            .orderBy("count", ascending=False) \
+            .limit(1000)
         self.storage_manager.save_to_s3(result_df, f"s3a://{Config.SILVER_S3_PATH}/timestamp_countby_dayofweek.parquet")
         return result_df
 
@@ -45,7 +47,7 @@ class DataTransformer(IDataTransformer):
         Returns:
             DataFrame: Transformed DataFrame with counts by crime type.
         """
-        result_df = df.groupBy('Primary Type').count().orderBy('count', ascending=False)
+        result_df = df.groupBy('Primary Type').count().orderBy('count', ascending=False).limit(1000)
         self.storage_manager.save_to_s3(result_df, f"s3a://{Config.SILVER_S3_PATH}/group_and_count_crimes_by_type"
                                                    f".parquet")
         return result_df
@@ -68,7 +70,7 @@ class DataTransformer(IDataTransformer):
         one_day = df.filter(col('Date').cast("date") == date_target.cast("date"))
         print(f"Count of crimes on {date_str}: {one_day.count()}")
 
-        combined_df = df.union(one_day).orderBy('Date', ascending=False)
+        combined_df = df.union(one_day).orderBy('Date', ascending=False).limit(1000)
         combined_df.show(5)
 
         combined_df = combined_df.withColumn(
