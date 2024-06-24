@@ -2,9 +2,7 @@ import boto3
 import logging
 import time
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - '
-                                               '%(message)s')
-
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 class EMRJobManager:
     def __init__(self):
@@ -19,6 +17,8 @@ class EMRJobManager:
                 'Args': [
                     'spark-submit',
                     '--deploy-mode', 'cluster',
+                    '--executor-memory', '4G',
+                    '--num-executors', '10',
                     script_path
                 ]
             }
@@ -37,9 +37,12 @@ class EMRJobManager:
         while True:
             response = self.client.describe_step(ClusterId=cluster_id, StepId=step_id)
             status = response['Step']['Status']['State']
+            reason = response['Step']['Status'].get('FailureDetails', {}).get('Message', 'No additional error info provided.')
             logging.info(f"Step status: {status}")
             if status == 'COMPLETED':
                 break
-            elif status == 'FAILED' or status == 'CANCELLED':
-                raise Exception(f"Step {step_id} failed.")
+            elif status in ['FAILED', 'CANCELLED']:
+                logging.error(f"Step {step_id} failed with error: {reason}")
+                raise Exception(f"Step {step_id} failed. Reason: {reason}")
             time.sleep(30)
+

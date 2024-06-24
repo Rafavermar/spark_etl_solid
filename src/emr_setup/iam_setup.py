@@ -26,7 +26,8 @@ class IAMSetup:
                             "Action": [
                                 "s3:GetObject",
                                 "s3:PutObject",
-                                "s3:ListBucket"
+                                "s3:ListBucket",
+
                             ],
                             "Resource": [
                                 f"arn:aws:s3:::{Config.AWS_S3_BUCKET}",
@@ -48,7 +49,12 @@ class IAMSetup:
                                 "ec2:CreateSecurityGroup",
                                 "ec2:AuthorizeSecurityGroupIngress",
                                 "ec2:AuthorizeSecurityGroupEgress",
-                                "ec2:DeleteSecurityGroup"
+                                "ec2:DeleteSecurityGroup",
+                                "ec2:CreateTags",
+                                "ec2:RunInstances",
+                                "ec2:TerminateInstances",
+                                "ec2:*",
+                                "iam:PassRole"
                             ],
                             "Resource": "*"
                         }

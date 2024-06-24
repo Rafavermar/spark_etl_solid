@@ -30,6 +30,7 @@ class Config:
         Adheres to:
             Single Responsibility Principle (SRP): This class is solely responsible for loading configuration settings.
         """
+    AWS_REGION = os.getenv('AWS_REGION')
     AWS_ACCESS_KEY = os.getenv('AWS_ACCESS_KEY')
     AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
     AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
