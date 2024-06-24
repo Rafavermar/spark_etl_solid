@@ -49,6 +49,7 @@ class Config:
     SPARK_EXECUTOR_CORES = int(os.getenv('SPARK_EXECUTOR_CORES'))
     SPARK_EXECUTOR_MEMORY = os.getenv('SPARK_EXECUTOR_MEMORY')
     SPARK_URL = os.getenv('SPARK_URL')
+    AWS_ACCOUNT_ID = os.getenv('AWS_ACCOUNT_ID')
 
     @staticmethod
     def get_data_path(filename):

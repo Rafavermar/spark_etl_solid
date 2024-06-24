@@ -10,7 +10,7 @@ class VPCSetup:
         self.ec2_client = boto3.client('ec2', region_name='us-east-1')
 
     def create_vpc(self):
-        # Check if VPC already exists
+
         vpcs = self.ec2_client.describe_vpcs()
         for vpc in vpcs['Vpcs']:
             if 'Tags' in vpc and any(tag['Key'] == 'Name' and tag['Value'] == 'MyVPC' for tag in vpc['Tags']):

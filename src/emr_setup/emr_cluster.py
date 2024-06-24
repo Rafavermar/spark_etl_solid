@@ -1,12 +1,9 @@
 import boto3
 import time
 import logging
-
 from botocore.exceptions import ClientError
-
 from src.config.config import Config
 from src.emr_setup.upload_script import S3Uploader
-from src.emr_setup.emr_job import EMRJobManager
 from src.emr_setup.iam_setup import IAMSetup
 from src.emr_setup.vpc_setup import VPCSetup
 
@@ -40,8 +37,8 @@ class EMRClusterManager:
     def create_cluster(self, emr_cluster_name, subnet_id):
         response = self.client.run_job_flow(
             Name=emr_cluster_name,
-            ServiceRole='EMR_DefaultRole',
-            JobFlowRole='EMR_EC2_DefaultRole',
+            ServiceRole='EMR_EC2_DefaultRole',
+            JobFlowRole='EMR_EC2_DefaultInstanceProfile',
             Instances={
                 'InstanceGroups': [
                     {
@@ -62,7 +59,6 @@ class EMRClusterManager:
                 'Ec2KeyName': Config.EC2_KEY_NAME,
                 'KeepJobFlowAliveWhenNoSteps': True,
                 'TerminationProtected': False,
-                'Placement': {'AvailabilityZone': 'us-east-1a'},
                 'Ec2SubnetId': subnet_id
             },
             Applications=[
@@ -97,9 +93,10 @@ class EMRClusterManager:
             time.sleep(30)
 
 
-def main():
+def setup_and_run_emr_job():
     iam_setup = IAMSetup()
-    iam_setup.create_iam_roles()
+    iam_setup.create_or_update_iam_roles()
+    time.sleep(30)  # Agregar una espera para asegurarse de que los roles y las políticas se propaguen
 
     vpc_setup = VPCSetup()
     vpc_id, subnet_id = vpc_setup.create_vpc()
@@ -122,10 +119,12 @@ def main():
         logging.info(f"Using existing cluster {emr_cluster_id}")
 
     script_s3_path = f"s3://{Config.AWS_S3_BUCKET}/{script_s3_key}"
+
+    from src.emr_setup.emr_job import EMRJobManager  # Importar aquí para evitar importaciones circulares
     emr_job_manager = EMRJobManager()
     job_step_id = emr_job_manager.add_pyspark_step(emr_cluster_id, script_s3_path)
     emr_job_manager.wait_for_step_completion(emr_cluster_id, job_step_id)
 
 
 if __name__ == "__main__":
-    main()
+    setup_and_run_emr_job()

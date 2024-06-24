@@ -1,100 +1,131 @@
 import boto3
 import json
 import logging
-from botocore.exceptions import ClientError
+from src.config.config import Config
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 class IAMSetup:
     def __init__(self):
         self.iam_client = boto3.client('iam')
 
-    def create_iam_roles(self):
+    def create_or_update_iam_roles(self):
+        roles = {
+            'EMR_EC2_DefaultRole': 'arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role'
+        }
+        policies = [
+            {
+                'PolicyName': 'EMR_S3_Access_Policy',
+                'PolicyDocument': {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "s3:GetObject",
+                                "s3:PutObject",
+                                "s3:ListBucket"
+                            ],
+                            "Resource": [
+                                f"arn:aws:s3:::{Config.AWS_S3_BUCKET}",
+                                f"arn:aws:s3:::{Config.AWS_S3_BUCKET}/*"
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                'PolicyName': 'EMR_EC2_Permissions',
+                'PolicyDocument': {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                        {
+                            "Effect": "Allow",
+                            "Action": [
+                                "ec2:Describe*",
+                                "ec2:CreateSecurityGroup",
+                                "ec2:AuthorizeSecurityGroupIngress",
+                                "ec2:AuthorizeSecurityGroupEgress",
+                                "ec2:DeleteSecurityGroup"
+                            ],
+                            "Resource": "*"
+                        }
+                    ]
+                }
+            }
+        ]
+        instance_profile = 'EMR_EC2_DefaultInstanceProfile'
+
+        for role, policy_arn in roles.items():
+            self.ensure_role(role, policy_arn)
+        for policy in policies:
+            policy_arn = self.ensure_policy(policy)
+            for role in roles.keys():
+                self.attach_policy_to_role(role, policy_arn)
+        self.ensure_instance_profile(instance_profile, roles.keys())
+
+    def ensure_role(self, role_name, policy_arn):
         try:
+            self.iam_client.get_role(RoleName=role_name)
+            logging.info(f"Role {role_name} already exists.")
+        except self.iam_client.exceptions.NoSuchEntityException:
             assume_role_policy_document = {
                 "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Effect": "Allow",
-                        "Principal": {
-                            "Service": "elasticmapreduce.amazonaws.com"
-                        },
-                        "Action": "sts:AssumeRole"
-                    }
-                ]
+                "Statement": [{
+                    "Effect": "Allow",
+                    "Principal": {"Service": "elasticmapreduce.amazonaws.com"},
+                    "Action": "sts:AssumeRole"
+                }]
             }
-
-            emr_role = self.iam_client.create_role(
-                RoleName='EMR_DefaultRole',
+            self.iam_client.create_role(
+                RoleName=role_name,
                 AssumeRolePolicyDocument=json.dumps(assume_role_policy_document)
             )
-            logging.info(f"Role created with name: EMR_DefaultRole")
+            logging.info(f"Role {role_name} created.")
+            self.iam_client.attach_role_policy(RoleName=role_name,
+                                               PolicyArn=policy_arn)
 
-            emr_ec2_role = self.iam_client.create_role(
-                RoleName='EMR_EC2_DefaultRole',
-                AssumeRolePolicyDocument=json.dumps(assume_role_policy_document)
+    def ensure_policy(self, policy):
+        policy_arn = f"arn:aws:iam::{Config.AWS_ACCOUNT_ID}:policy/{policy['PolicyName']}"
+        try:
+            self.iam_client.get_policy(PolicyArn=policy_arn)
+            logging.info(f"Policy {policy['PolicyName']} already exists.")
+        except self.iam_client.exceptions.NoSuchEntityException:
+            self.iam_client.create_policy(
+                PolicyName=policy['PolicyName'],
+                PolicyDocument=json.dumps(policy['PolicyDocument'])
             )
-            logging.info(f"Role created with name: EMR_EC2_DefaultRole")
+            logging.info(f"Policy {policy['PolicyName']} created.")
+        return policy_arn
 
-            # Attach the AmazonElasticMapReduceRole policy to the EMR role
-            self.iam_client.attach_role_policy(
-                RoleName='EMR_DefaultRole',
-                PolicyArn='arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceRole'
-            )
+    def attach_policy_to_role(self, role, policy_arn):
+        self.iam_client.attach_role_policy(RoleName=role, PolicyArn=policy_arn)
 
-            # Attach the AmazonElasticMapReduceforEC2Role policy to the EMR EC2 role
-            self.iam_client.attach_role_policy(
-                RoleName='EMR_EC2_DefaultRole',
-                PolicyArn='arn:aws:iam::aws:policy/service-role/AmazonElasticMapReduceforEC2Role'
-            )
-
-            # Create a custom policy for S3 access
-            s3_access_policy_document = {
-                "Version": "2012-10-17",
-                "Statement": [
-                    {
-                        "Effect": "Allow",
-                        "Action": [
-                            "s3:GetObject",
-                            "s3:PutObject",
-                            "s3:ListBucket"
-                        ],
-                        "Resource": [
-                            "arn:aws:s3:::spark-etl-rvm",
-                            "arn:aws:s3:::spark-etl-rvm/*"
-                        ]
-                    }
-                ]
-            }
-
-            s3_access_policy = self.iam_client.create_policy(
-                PolicyName='EMR_S3_Access_Policy',
-                PolicyDocument=json.dumps(s3_access_policy_document)
-            )
-            logging.info(f"S3 access policy created with ARN: {s3_access_policy['Policy']['Arn']}")
-
-            # Attach the S3 access policy to both roles
-            self.iam_client.attach_role_policy(
-                RoleName='EMR_DefaultRole',
-                PolicyArn=s3_access_policy['Policy']['Arn']
-            )
-
-            self.iam_client.attach_role_policy(
-                RoleName='EMR_EC2_DefaultRole',
-                PolicyArn=s3_access_policy['Policy']['Arn']
-            )
-
-            return emr_role, emr_ec2_role
-
-        except ClientError as e:
-            if e.response['Error']['Code'] == 'EntityAlreadyExists':
-                logging.info("Role already exists. Skipping creation.")
-            else:
-                logging.error(e)
-                raise
+    def ensure_instance_profile(self, instance_profile_name, role_names):
+        try:
+            self.iam_client.get_instance_profile(
+                InstanceProfileName=instance_profile_name)
+            logging.info(
+                f"Instance profile {instance_profile_name} already exists.")
+        except self.iam_client.exceptions.NoSuchEntityException:
+            self.iam_client.create_instance_profile(
+                InstanceProfileName=instance_profile_name)
+            logging.info(f"Instance profile {instance_profile_name} created.")
+        for role_name in role_names:
+            try:
+                self.iam_client.add_role_to_instance_profile(
+                    InstanceProfileName=instance_profile_name,
+                    RoleName=role_name)
+                logging.info(
+                    f"Role {role_name} added to instance profile {instance_profile_name}.")
+            except (self.iam_client.exceptions.LimitExceededException,
+                    self.iam_client.exceptions.EntityAlreadyExistsException) as e:
+                logging.info(
+                    f"Role {role_name} is already attached to instance profile {instance_profile_name}: {str(e)}")
 
 
 if __name__ == "__main__":
     iam_setup = IAMSetup()
-    iam_setup.create_iam_roles()
+    iam_setup.create_or_update_iam_roles()

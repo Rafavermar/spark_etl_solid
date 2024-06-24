@@ -1,10 +1,9 @@
 import boto3
 import logging
 import time
-from src.config.config import Config
-from src.emr_setup.emr_cluster import EMRClusterManager
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - '
+                                               '%(message)s')
 
 
 class EMRJobManager:
@@ -44,20 +43,3 @@ class EMRJobManager:
             elif status == 'FAILED' or status == 'CANCELLED':
                 raise Exception(f"Step {step_id} failed.")
             time.sleep(30)
-
-
-if __name__ == "__main__":
-    emr_cluster_manager = EMRClusterManager()
-    cluster_name = 'MySparkCluster'
-
-    cluster_id_response = emr_cluster_manager.get_existing_cluster_id(cluster_name)
-    if not cluster_id_response:
-        logging.error(f"No active cluster found with name {cluster_name}")
-    else:
-        logging.info(f"Using existing cluster {cluster_id_response}")
-
-        script_s3_path = f"s3://{Config.AWS_S3_BUCKET}/pyspark_jobs/pyspark_job.py"
-
-        emr_job_manager = EMRJobManager()
-        step_id_response = emr_job_manager.add_pyspark_step(cluster_id_response, script_s3_path)
-        emr_job_manager.wait_for_step_completion(cluster_id_response, step_id_response)
