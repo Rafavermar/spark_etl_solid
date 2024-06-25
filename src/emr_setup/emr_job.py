@@ -2,7 +2,9 @@ import boto3
 import logging
 import time
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 class EMRJobManager:
     def __init__(self):
@@ -35,9 +37,11 @@ class EMRJobManager:
 
     def wait_for_step_completion(self, cluster_id, step_id):
         while True:
-            response = self.client.describe_step(ClusterId=cluster_id, StepId=step_id)
+            response = self.client.describe_step(ClusterId=cluster_id,
+                                                 StepId=step_id)
             status = response['Step']['Status']['State']
-            reason = response['Step']['Status'].get('FailureDetails', {}).get('Message', 'No additional error info provided.')
+            reason = response['Step']['Status'].get('FailureDetails', {}).get(
+                'Message', 'No additional error info provided.')
             logging.info(f"Step status: {status}")
             if status == 'COMPLETED':
                 break
@@ -45,4 +49,3 @@ class EMRJobManager:
                 logging.error(f"Step {step_id} failed with error: {reason}")
                 raise Exception(f"Step {step_id} failed. Reason: {reason}")
             time.sleep(30)
-
