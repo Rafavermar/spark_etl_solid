@@ -12,8 +12,10 @@ At the same time, this project ables to create an EMR-cluster directly running t
 
 - **Automatic data download**: The script checks if the CSV file already exists; if not, it downloads it automatically.
 - **Data processing with PySpark**: Uses Spark to transform data, including date format conversions and aggregations.
-- **Data storage**: Saves processed data to AWS S3 in Parquet format.
-- **Flexible data source selection**: Use the --use-s3 parameter to specify whether to load data from local files or from S3.
+- **Data storage**: Saves processed data to AWS S3 in Parquet format or locally based on user preference.
+- **Flexible data source and storage selection**: 
+  - Use the `--use-s3` parameter to specify whether to load data from local files or from S3.
+  - Use the `--save-local` parameter to specify whether to save processed data locally or on S3.
  ```bash
 python main.py --use-s3 
 ```
@@ -60,6 +62,7 @@ solid_etl_spark/
 │   ├── managers
 │   └──__init_.py
 │   └── data_transformer.py
+│   └── local_storage_manager.py
 │   └── s3_storage_manager.py
 │   └── spark_session_manager.py
 
