@@ -10,7 +10,7 @@ class IStorageManager(ABC):
            Interface Segregation Principle (ISP): Provides a specific interface for storage management, ensuring classes only implement what they need.
        """
     @abstractmethod
-    def save_to_s3(self, df: DataFrame, path: str, partition_col: str = None):
+    def save_data(self, df: DataFrame, path: str, partition_col: str = None):
         """
         Saves a DataFrame to an S3 path.
 

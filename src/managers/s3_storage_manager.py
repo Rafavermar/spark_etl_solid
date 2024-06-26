@@ -21,7 +21,8 @@ class S3StorageManager(IStorageManager):
 
     @log_decorator
     @timing_decorator
-    def save_to_s3(self, df: DataFrame, path: str, partition_col: str = None):
+    def save_data(self, df: DataFrame, filename: str, stage='Silver',
+                  partition_col: str = None):
         """
                Saves a DataFrame to an S3 path.
 
@@ -29,7 +30,13 @@ class S3StorageManager(IStorageManager):
                    df (DataFrame): The DataFrame to save.
                    path (str): The S3 path where the DataFrame will be saved.
                    partition_col (str, optional): Column to partition the data by. Defaults to None.
+                   :param partition_col:
+                   :param df:
+                   :param filename:
+                   :param stage:
                """
+        path = f"{Config.SILVER_S3_PATH}{filename}" if stage == 'Silver' else f"{Config.BRONZE_S3_PATH}{filename}"
+
         hadoop_conf = self.spark._jsc.hadoopConfiguration()
         hadoop_conf.set("fs.s3a.access.key", Config.AWS_ACCESS_KEY)
         hadoop_conf.set("fs.s3a.secret.key", Config.AWS_SECRET_KEY)

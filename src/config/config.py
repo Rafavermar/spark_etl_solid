@@ -35,7 +35,7 @@ class Config:
     AWS_S3_BUCKET = os.getenv('AWS_S3_BUCKET')
     AWS_SECRET_KEY = os.getenv('AWS_SECRET_KEY')
     BRONZE_S3_PATH = os.getenv('BRONZE_S3_PATH')
-    SILVER_S3_PATH = os.getenv('SILVER_S3_PATH')
+    SILVER_S3_PATH = f"s3a://{os.getenv('AWS_S3_BUCKET')}/Silver/"
     DATA_DIR = os.getenv('DATA_DIR')
     LOCAL_DIR = os.getenv('LOCAL_DIR')
     PYSPARK_JOB_PATH = os.getenv('PYSPARK_JOB_PATH')
@@ -51,7 +51,13 @@ class Config:
     SPARK_EXECUTOR_MEMORY = os.getenv('SPARK_EXECUTOR_MEMORY')
     SPARK_URL = os.getenv('SPARK_URL')
     AWS_ACCOUNT_ID = os.getenv('AWS_ACCOUNT_ID')
+    LOCAL_STORAGE_PATH = os.getenv('LOCAL_STORAGE_PATH')
 
     @staticmethod
     def get_data_path(filename):
         return os.path.join(Config.DATA_DIR, filename)
+
+    @staticmethod
+    def get_s3_path(stage: str, filename: str):
+        """Generates a full S3 path for a given stage and filename."""
+        return f"{Config.SILVER_S3_PATH}{stage}/{filename}"

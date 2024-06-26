@@ -15,7 +15,7 @@ class MockStorageManager(IStorageManager):
         Liskov Substitution Principle (LSP): This mock implementation can be substituted for any other implementation of IStorageManager without altering the correct behavior of the program.
     """
 
-    def save_to_s3(self, df: DataFrame, path: str, partition_col: str = None):
+    def save_data(self, df: DataFrame, path: str, partition_col: str = None):
         """
         Mocks the save operation to an S3 path.
 
@@ -37,10 +37,10 @@ def test_storage_manager():
     df = spark.createDataFrame([(1, "a"), (2, "b")], ["id", "value"])
 
     storage_manager: IStorageManager = MockStorageManager()
-    storage_manager.save_to_s3(df, "mock/path")
+    storage_manager.save_data(df, "mock/path")
 
     storage_manager = S3StorageManager(spark)
-    storage_manager.save_to_s3(df, "s3a://bucket/path")
+    storage_manager.save_data(df, "s3a://bucket/path")
 
 
 test_storage_manager()
